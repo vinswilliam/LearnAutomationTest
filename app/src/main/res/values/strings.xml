@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">WhiteBird</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="note_title">Title</string>
+    <string name="note_description">Description</string>
+    <string name="note_date">Date</string>
+    <string name="note_time">Time</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="untitled">Untitled</string>
+    <string name="update_failed">Update failed</string>
+</resources>
