@@ -1,6 +1,8 @@
 package com.siuli.andr.whitebird;
 
 import android.support.test.espresso.DataInteraction;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -14,11 +16,13 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,11 +45,6 @@ public class AddItemTest {
     }
 
     @Test
-    public void lastItem_notDisplayed(){
-        onView(withText("tes1")).check(doesNotExist());
-    }
-
-    @Test
     public void checkItem_exist(){
     }
 
@@ -60,7 +59,16 @@ public class AddItemTest {
         onView(withId(R.id.et_note_title)).perform(typeText(TITLE_TO_ADD), closeSoftKeyboard());
         onView(withId(R.id.et_note_desc)).perform(typeText(DESC_TO_ADD), closeSoftKeyboard());
         onView(withId(R.id.action_save)).perform(click());
+    }
 
+    @Test
+    public void cancel_addItem(){
+        onView(withId(R.id.fab_add_note)).perform(click());
+
+        Espresso.closeSoftKeyboard();
+        pressBack();
+
+        onView(withId(R.id.fab_add_note)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -72,6 +80,22 @@ public class AddItemTest {
     }
 
 
+    private final String NEW_TITLE = "Title has change";
+    @Test
+    public void edit_item(){
+        onView(withId(R.id.rv_note)).perform(RecyclerViewActions.actionOnItemAtPosition(ITEM_POSITION, click()));
+
+        onView(withId(R.id.action_edit)).perform(click());
+
+        onView(withId(R.id.et_note_title)).perform(new ViewAction[]{ clearText(), typeText(NEW_TITLE), closeSoftKeyboard()});
+
+        onView(withId(R.id.action_save)).perform(click());
+
+        pressBack();
+
+        onView(withId(R.id.rv_note)).perform(RecyclerViewActions.actionOnItemAtPosition(ITEM_POSITION, click()));
+        onView(withId(R.id.tv_title_detail)).check(matches(withText(NEW_TITLE)));
+    }
 
 
 }

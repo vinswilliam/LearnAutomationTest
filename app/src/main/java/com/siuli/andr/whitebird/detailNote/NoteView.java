@@ -73,5 +73,6 @@ public class NoteView extends AppCompatActivity implements INoteView {
         Intent addtNoteIntent = new Intent(this, AddNoteView.class);
         addtNoteIntent.putExtra("noteId", noteId);
         startActivity(addtNoteIntent);
+        finish();
     }
 }
