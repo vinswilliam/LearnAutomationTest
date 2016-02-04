@@ -16,4 +16,9 @@ public class ParseComServerAuthenticate implements ServerAuthenticate {
     public String userSignIn(String user, String pass, String authType) throws Exception {
         return FAKE_TOKEN;
     }
+
+    @Override
+    public String userSignIn(String user, String pass, String authType, FirebaseListener tokenListener) {
+        return null;
+    }
 }

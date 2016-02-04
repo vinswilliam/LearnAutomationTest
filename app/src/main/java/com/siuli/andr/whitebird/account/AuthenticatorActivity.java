@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.siuli.andr.whitebird.R;
 
 /**
@@ -38,6 +39,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.act_login);
+
+        //setup firebase
+        Firebase.setAndroidContext(this);
+
         mAccountManager = AccountManager.get(getBaseContext());
 
         String accountName = getIntent().getStringExtra(ARG_ACCOUNT_NAME);
@@ -73,38 +78,65 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
         final String accountType = getIntent().getStringExtra(ARG_ACCOUNT_TYPE);
 
-        new AsyncTask<String, Void, Intent>(){
+        AccountGeneral.sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType, new ServerAuthenticate.FirebaseListener() {
+
+            //String authToken = null;
+            Bundle data = new Bundle();
+
             @Override
-            protected Intent doInBackground(String... params) {
-                Log.d("siuli", TAG + "> Started authenticating");
+            public void authTokenListener(String token) {
+                data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+                data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+                data.putString(AccountManager.KEY_AUTHTOKEN, token);
+                data.putString(PARAM_USER_PASS, userPass);
 
-                String authToken = null;
-                Bundle data = new Bundle();
-
-                try{
-                    authToken = AccountGeneral.sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
-
-                    data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
-                    data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
-                    data.putString(AccountManager.KEY_AUTHTOKEN, authToken);
-                    data.putString(PARAM_USER_PASS, userPass);
-                } catch (Exception e){
-                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
-                }
                 final Intent res = new Intent();
                 res.putExtras(data);
-                return res;
+
+                finishLogin(res);
             }
 
             @Override
-            protected void onPostExecute(Intent intent) {
-                if(intent.hasExtra(KEY_ERROR_MESSAGE)){
-                    Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
-                } else {
-                    finishLogin(intent);
-                }
+            public void errorTokenListener(String errorMessage) {
+
+                //data.putString(KEY_ERROR_MESSAGE, errorMessage);
+                Toast.makeText(getBaseContext(), errorMessage, Toast.LENGTH_SHORT).show();
             }
-        }.execute();
+        });
+
+
+//        new AsyncTask<String, Void, Intent>(){
+//            @Override
+//            protected Intent doInBackground(String... params) {
+//                Log.d("siuli", TAG + "> Started authenticating");
+//
+//                String authToken = null;
+//                Bundle data = new Bundle();
+//
+//                try{
+//                    authToken = AccountGeneral.sServerAuthenticate.userSignIn(userName, userPass, mAuthTokenType);
+//
+//                    data.putString(AccountManager.KEY_ACCOUNT_NAME, userName);
+//                    data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+//                    data.putString(AccountManager.KEY_AUTHTOKEN, authToken);
+//                    data.putString(PARAM_USER_PASS, userPass);
+//                } catch (Exception e){
+//                    data.putString(KEY_ERROR_MESSAGE, e.getMessage());
+//                }
+//                final Intent res = new Intent();
+//                res.putExtras(data);
+//                return res;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Intent intent) {
+//                if(intent.hasExtra(KEY_ERROR_MESSAGE)){
+//                    Toast.makeText(getBaseContext(), intent.getStringExtra(KEY_ERROR_MESSAGE), Toast.LENGTH_SHORT).show();
+//                } else {
+//                    finishLogin(intent);
+//                }
+//            }
+//        }.execute();
     }
 
     private void finishLogin(Intent intent){

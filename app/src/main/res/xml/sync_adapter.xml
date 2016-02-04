@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="com.siuli.andr.whitebird"
+    android:accountType="com.siuli.auth"
+    android:userVisible="true"
+    android:allowParallelSyncs="false"
+    android:isAlwaysSyncable="false"
+    android:supportsUploading="true"/>
+
+    <!--
+        contentAuthority = authority for content provider, get it from android manifest
+        accountType = account type that is tied with sync adapter. It's also defined in authenticator's xml
+    -->

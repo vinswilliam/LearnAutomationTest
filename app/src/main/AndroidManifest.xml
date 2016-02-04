@@ -8,6 +8,12 @@
 
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,7 +27,7 @@
         <activity android:name=".addNote.AddNoteView"/>
 
         <!-- Account Auth -->
-        <activity android:name=".account.AccountActivity1" >
+        <activity android:name=".login.AccountActivity1" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,6 +36,7 @@
         </activity>
         <activity android:name=".account.AuthenticatorActivity"/>
         <activity android:name=".account.SignUpActivity"/>
+        <!-- Service for AccountAuthenticator-->
         <service android:name=".account.SiuliAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -39,10 +46,25 @@
         </service>
         <!-- End of Account Auth -->
 
+        <!-- Service for SyncAdapter -->
+        <service
+            android:name=".syncadapter.NoteSyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adapter"/>
+        </service>
+        <!-- End of Service for SyncAdapter -->
+
+        <!-- Content Provider -->
         <provider
             android:authorities="com.siuli.andr.whitebird"
             android:name=".data.NoteContentProvider"
             android:exported="false"/>
+        <!-- End of Content Provider -->
     </application>
 
 </manifest>

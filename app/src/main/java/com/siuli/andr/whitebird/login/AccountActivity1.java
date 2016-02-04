@@ -1,4 +1,4 @@
-package com.siuli.andr.whitebird.account;
+package com.siuli.andr.whitebird.login;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -9,6 +9,7 @@ import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.siuli.andr.whitebird.R;
+import com.siuli.andr.whitebird.account.AccountGeneral;
+import com.siuli.andr.whitebird.listNotes.ListNoteView;
 
 import java.io.IOException;
 
@@ -75,6 +78,8 @@ public class AccountActivity1 extends Activity {
                 showAccountPicker(AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, invalidate);
             }
         }
+
+        getTokenForAccountCreateIfNeeded(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS);
     }
 
     @Override
@@ -94,6 +99,7 @@ public class AccountActivity1 extends Activity {
                     Bundle bnd = future.getResult();
                     showMessage("Account was created");
                     Log.d("siuli", "AddNewAccount Bundle is " + bnd);
+                    moveToListNote();
                 } catch (Exception e) {
                     e.printStackTrace();
                     showMessage(e.getMessage());
@@ -168,6 +174,12 @@ public class AccountActivity1 extends Activity {
         }).start();
     }
 
+    private void moveToListNote(){
+        Intent intent = new Intent(getApplicationContext(), ListNoteView.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void getTokenForAccountCreateIfNeeded(String accountType, String authTokenType){
         final AccountManagerFuture<Bundle> future = mAccountManager
                 .getAuthTokenByFeatures(accountType, authTokenType, null, this, null, null,
@@ -180,6 +192,7 @@ public class AccountActivity1 extends Activity {
                                     final String authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
                                     showMessage(((authToken != null) ? "SUCCESS!\ntoken: " + authToken : "FAIL"));
                                     Log.d("siuli", "GetTokenForAccount Bundle is " + bnd);
+                                    moveToListNote();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     showMessage(e.getMessage());
