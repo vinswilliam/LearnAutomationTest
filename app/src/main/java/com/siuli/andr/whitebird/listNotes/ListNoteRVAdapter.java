@@ -22,12 +22,14 @@ public class ListNoteRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         private TextView mTvTitle;
         private TextView mTvNoteDate;
+        private TextView mTvNoteId;
 
         public ViewHolderNote(View itemView) {
             super(itemView);
 
             mTvTitle = (TextView) itemView.findViewById(R.id.tv_title);
             mTvNoteDate = (TextView) itemView.findViewById(R.id.tv_note_date);
+            mTvNoteId = (TextView) itemView.findViewById(R.id.tv_note_id);
         }
     }
 
@@ -48,6 +50,7 @@ public class ListNoteRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ViewHolderNote _holder = (ViewHolderNote) holder;
         _holder.mTvTitle.setText(mListNote.get(position).getTitle());
         _holder.mTvNoteDate.setText(mListNote.get(position).getNoteDateString());
+        _holder.mTvNoteId.setText(mListNote.get(position).getNoteId());
     }
 
     @Override

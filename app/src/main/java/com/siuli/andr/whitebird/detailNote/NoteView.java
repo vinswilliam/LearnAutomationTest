@@ -1,18 +1,31 @@
 package com.siuli.andr.whitebird.detailNote;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.DialogPreference;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.siuli.andr.whitebird.R;
+import com.siuli.andr.whitebird.account.AccountGeneral;
 import com.siuli.andr.whitebird.addNote.AddNoteView;
 import com.siuli.andr.whitebird.data.Note;
+import com.siuli.andr.whitebird.data.NoteContract;
+import com.siuli.andr.whitebird.listNotes.ListNoteView;
 
 /**
  * Created by william on 1/12/2016.
@@ -27,6 +40,63 @@ public class NoteView extends AppCompatActivity implements INoteView {
 
     private long noteId;
 
+    private AccountManager mAccountManager;
+    private Account mConnectedAccount;
+
+    String authToken;
+
+    private void getTokenForAccountCreateIfNeeded(String accountType, String authTokenType) {
+        final AccountManagerFuture<Bundle> future = mAccountManager.getAuthTokenByFeatures(accountType, authTokenType, null, this, null, null,
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        Bundle bnd = null;
+                        try {
+                            bnd = future.getResult();
+                            authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
+                            if (authToken != null) {
+                                String accountName = bnd.getString(AccountManager.KEY_ACCOUNT_NAME);
+                                mConnectedAccount = new Account(accountName, AccountGeneral.ACCOUNT_TYPE);
+                            }
+                            Log.d("siuli", ((authToken != null) ? "SUCCESS!\ntoken: " + authToken : "FAIL"));
+                            Log.d("siuli", "GetTokenForAccount Bundle is " + bnd);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                , null);
+    }
+
+    private TableObserver observer;
+    public class TableObserver extends ContentObserver {
+
+        /**
+         * Creates a content observer.
+         *
+         * @param handler The handler to run {@link #onChange} on, or null if none.
+         */
+        public TableObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            Log.d("siuli", "onChange ContentObserver " + uri);
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true); // performing a sync no matter if it's off
+            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true); // performing a sync no matter if it's off
+            ContentResolver.requestSync(mConnectedAccount, NoteContract.AUTHORITY, bundle);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +110,22 @@ public class NoteView extends AppCompatActivity implements INoteView {
         noteId = getIntent().getLongExtra("noteId", 0);
         //showNote(note);
         mPresenter = new NotePresenter(getApplicationContext(), this, noteId);
+
+        mAccountManager = AccountManager.get(this);
+        getTokenForAccountCreateIfNeeded(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS);
+        observer = new TableObserver(null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getContentResolver().registerContentObserver(NoteContract.CONTENT_URI, true, observer);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getContentResolver().unregisterContentObserver(observer);
     }
 
     @Override

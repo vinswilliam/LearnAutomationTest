@@ -7,7 +7,10 @@ import android.accounts.AccountManagerFuture;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -86,14 +89,12 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
                             if (authToken != null) {
                                 String accountName = bnd.getString(AccountManager.KEY_ACCOUNT_NAME);
                                 mConnectedAccount = new Account(accountName, AccountGeneral.ACCOUNT_TYPE);
-//                                initButtonsAfterConnect();
                             }
                             Log.d("siuli", ((authToken != null) ? "SUCCESS!\ntoken: " + authToken : "FAIL"));
                             Log.d("siuli", "GetTokenForAccount Bundle is " + bnd);
 
                         } catch (Exception e) {
                             e.printStackTrace();
-//                            showMessage(e.getMessage());
                         }
                     }
                 }
@@ -104,6 +105,7 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listnote);
+
         mAccountManager = AccountManager.get(this);
         getTokenForAccountCreateIfNeeded(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS);
 
@@ -121,7 +123,6 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true); // performing a sync no matter if it's off
                 bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true); // performing a sync no matter if it's off
                 ContentResolver.requestSync(mConnectedAccount, NoteContract.AUTHORITY, bundle);
-
             }
         });
 

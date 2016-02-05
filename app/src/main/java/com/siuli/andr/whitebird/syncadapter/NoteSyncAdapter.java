@@ -62,9 +62,31 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
             String authToken = mAccountManager.blockingGetAuthToken(account, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
             String userObjectId = mAccountManager.getUserData(account, AccountGeneral.USERDATA_USER_OBJ_ID);
 
+            Log.d("siuli", "onSync > " + authToken);
+
             String secretKey = "NgledzEXdPvNJaRHwZSHIOfgLoWJFeFTrtLuPheZ";
             String URL = "https://luminous-heat-594.firebaseio.com/note.json?auth=" + secretKey;
 
+            //get local item
+            ArrayList<Note> localNotes = new ArrayList<>();
+            Cursor cursor = null;
+            try {
+                cursor = provider.query(NoteContract.Notes.CONTENT_URI, NoteContract.Notes.PROJECTION_ALL, null, null, NoteContract.Notes.SORT_ORDER_DEFAULT);
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        Note note = new Note(cursor);
+                        localNotes.add(note);
+                        cursor.moveToNext();
+                    }
+                    cursor.close();
+                }
+
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
+
+            //get from server
             Ion.with(mContext)
             .load(URL)
             .asJsonObject()
@@ -75,23 +97,6 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
                     if(result != null) {
                         Log.d("siuli", TAG + " > " + result.toString());
 
-                        ArrayList<Note> localNotes = new ArrayList<>();
-                        Cursor cursor = null;
-                        try {
-                            cursor = provider.query(NoteContract.Notes.CONTENT_URI, NoteContract.Notes.PROJECTION_ALL, null, null, NoteContract.Notes.SORT_ORDER_DEFAULT);
-
-                            if (cursor != null && cursor.moveToFirst()) {
-                                while (!cursor.isAfterLast()) {
-                                    Note note = new Note(cursor);
-                                    localNotes.add(note);
-                                    cursor.moveToNext();
-                                }
-                                cursor.close();
-                            }
-
-                        } catch (RemoteException e1) {
-                            e1.printStackTrace();
-                        }
                     }
                 }
             });

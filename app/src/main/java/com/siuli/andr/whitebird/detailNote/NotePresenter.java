@@ -1,11 +1,22 @@
 package com.siuli.andr.whitebird.detailNote;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.siuli.andr.whitebird.account.AccountGeneral;
 import com.siuli.andr.whitebird.addNote.AddNoteView;
 import com.siuli.andr.whitebird.data.Note;
 import com.siuli.andr.whitebird.data.NoteContract;
@@ -25,7 +36,6 @@ public class NotePresenter implements INotePresenter {
         mCtx = ctx;
         getNote(noteId);
     }
-
 
     @Override
     public void displayNote(Note note) {

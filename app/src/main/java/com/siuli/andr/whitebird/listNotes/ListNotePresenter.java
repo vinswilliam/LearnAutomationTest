@@ -45,6 +45,7 @@ public class ListNotePresenter implements IListNotePresenter {
 
                 cursor.moveToNext();
             }
+            cursor.close();
             mView.showNotes(mListNote);
         }
     }
@@ -72,6 +73,7 @@ public class ListNotePresenter implements IListNotePresenter {
         Cursor cursor = resolver.query(uriInsert, NoteContract.Notes.PROJECTION_ALL, null, null, null);
         if(cursor != null && cursor.moveToFirst()) {
             Note note = new Note(cursor);
+            cursor.close();
             mView.addNote(note);
         }
     }
