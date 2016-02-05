@@ -9,4 +9,5 @@ public interface INoteView {
     void showNote(Note note);
     void deleteNote();
     void editNote(long noteId);
+    void finishAct();
 }

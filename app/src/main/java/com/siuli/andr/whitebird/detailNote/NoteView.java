@@ -1,7 +1,10 @@
 package com.siuli.andr.whitebird.detailNote;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.DialogPreference;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +54,9 @@ public class NoteView extends AppCompatActivity implements INoteView {
             case R.id.action_edit:
                 editNote(noteId);
                 return true;
+            case R.id.action_delete:
+                deleteNote();
+                return true;
             default:
                 return false;
         }
@@ -65,14 +71,27 @@ public class NoteView extends AppCompatActivity implements INoteView {
 
     @Override
     public void deleteNote() {
-
+        new AlertDialog.Builder(this)
+                .setTitle("Delete note")
+                .setMessage("Are you sure?")
+                .setIcon(R.drawable.ic_launcher)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mPresenter.deleteNote(noteId);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+        .show();
     }
 
     @Override
     public void editNote(long noteId) {
-        Intent addtNoteIntent = new Intent(this, AddNoteView.class);
-        addtNoteIntent.putExtra("noteId", noteId);
-        startActivity(addtNoteIntent);
+        mPresenter.updateNote(noteId);
+    }
+
+    @Override
+    public void finishAct() {
         finish();
     }
 }

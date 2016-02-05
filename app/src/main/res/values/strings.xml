@@ -11,4 +11,5 @@
     <string name="edit">Edit</string>
     <string name="untitled">Untitled</string>
     <string name="update_failed">Update failed</string>
+    <string name="delete">DELETE</string>
 </resources>

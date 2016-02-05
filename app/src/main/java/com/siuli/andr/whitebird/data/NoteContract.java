@@ -22,6 +22,7 @@ public final class NoteContract {
 
         public static final String[] PROJECTION_ALL = new String[]{
                 NoteDBSchema.COL_ID,
+                NoteDBSchema.COL_NOTE_ID,
                 NoteDBSchema.COL_TITLE,
                 NoteDBSchema.COL_DESCRIPTION,
                 NoteDBSchema.COL_NOTE_DATE,

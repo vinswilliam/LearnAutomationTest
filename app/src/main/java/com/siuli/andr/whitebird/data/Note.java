@@ -12,6 +12,7 @@ import com.siuli.andr.whitebird.utilities.Util;
 public class Note implements Parcelable{
 
     private long id;
+    private String noteId;
     private String title;
     private String description;
     private long noteDate;
@@ -24,6 +25,7 @@ public class Note implements Parcelable{
 
     public Note(Cursor cursor){
         id = (cursor.getLong(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_ID)));
+        noteId = (cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_NOTE_ID)));
         title = (cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_TITLE)));
         description = (cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_DESCRIPTION)));
         createdDate = (cursor.getLong(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_NOTE_CREATED)));
@@ -33,6 +35,7 @@ public class Note implements Parcelable{
 
     protected Note(Parcel in) {
         id = in.readLong();
+        noteId = in.readString();
         title = in.readString();
         description = in.readString();
         noteDate = in.readLong();
@@ -57,6 +60,14 @@ public class Note implements Parcelable{
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
     }
 
     public String getTitle() {
@@ -106,6 +117,7 @@ public class Note implements Parcelable{
     private Note parseCursorToNote(Cursor cursor){
         Note note = new Note();
         note.setId(cursor.getLong(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_ID)));
+        note.setNoteId(cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_NOTE_ID)));
         note.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_TITLE)));
         note.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_DESCRIPTION)));
         note.setCreatedDate(cursor.getLong(cursor.getColumnIndexOrThrow(NoteDBSchema.COL_NOTE_CREATED)));
@@ -122,6 +134,7 @@ public class Note implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
+        dest.writeString(noteId);
         dest.writeString(title);
         dest.writeString(description);
         dest.writeLong(noteDate);

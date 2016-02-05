@@ -1,11 +1,15 @@
 package com.siuli.andr.whitebird.detailNote;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.widget.Toast;
 
+import com.siuli.andr.whitebird.addNote.AddNoteView;
 import com.siuli.andr.whitebird.data.Note;
 import com.siuli.andr.whitebird.data.NoteContract;
+import com.siuli.andr.whitebird.listNotes.ListNoteView;
 
 /**
  * Created by william on 1/13/2016.
@@ -40,11 +44,20 @@ public class NotePresenter implements INotePresenter {
 
     @Override
     public void deleteNote(long noteId) {
-
+        Uri uri = Uri.withAppendedPath(NoteContract.Notes.CONTENT_URI, String.valueOf(noteId));
+        int delResult = mCtx.getContentResolver().delete(uri, null, null);
+        if(delResult > 0) {
+            mView.finishAct();
+        } else {
+            Toast.makeText(mCtx, "Delete failed.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void updateNote(long noteId) {
-
+        Intent addNoteIntent = new Intent(mCtx, AddNoteView.class);
+        addNoteIntent.putExtra("noteId", noteId);
+        mCtx.startActivity(addNoteIntent);
+        mView.finishAct();
     }
 }

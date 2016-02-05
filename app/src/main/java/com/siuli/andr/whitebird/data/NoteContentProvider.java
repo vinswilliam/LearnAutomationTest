@@ -104,14 +104,14 @@ public class NoteContentProvider extends ContentProvider {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void logQuery(SQLiteQueryBuilder builder, String[] projection, String selection, String sortOrder){
         if(BuildConfig.DEBUG){
-            Log.v("cpsample", "query: " + builder.buildQuery(projection, selection, null, null, sortOrder, null));
+            Log.v("siuli", "cpsample > query: " + builder.buildQuery(projection, selection, null, null, sortOrder, null));
         }
     }
 
     @SuppressWarnings("deprecation")
     private void logQueryDeprecated(SQLiteQueryBuilder builder, String[] projection, String selection, String sortOrder){
         if(BuildConfig.DEBUG){
-            Log.v("cpsample", "query: " + builder.buildQuery(projection, selection, null, null, null, sortOrder, null));
+            Log.v("siuli", "cpsample > query: " + builder.buildQuery(projection, selection, null, null, null, sortOrder, null));
         }
     }
 
@@ -143,7 +143,7 @@ public class NoteContentProvider extends ContentProvider {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         if(URI_MATCHER.match(uri) == NOTE_LIST){
             long id = db.insert(NoteDBSchema.TBL_NOTES, null, values);
-            Log.d("cpsample", "new id: " + id);
+            Log.d("siuli", "cpsample > new id: " + id);
             return getUriForId(id, uri);
         } else {
             long id = db.insertWithOnConflict(NoteDBSchema.TBL_PHOTOS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -158,7 +158,7 @@ public class NoteContentProvider extends ContentProvider {
                 getContext().getContentResolver().notifyChange(itemUri, null);
             }
 
-            Log.d("samplecp", "uriinsert: " + itemUri);
+            Log.d("siuli", "cpsample > uriinsert: " + itemUri);
             return itemUri;
         } else {
             throw new SQLException("Problem while inserting into uri: " + uri);
@@ -190,8 +190,8 @@ public class NoteContentProvider extends ContentProvider {
 
     private void doAnalytics(Uri uri, String event){
         if(BuildConfig.DEBUG){
-            Log.v("cpsample", event + " -> " + uri);
-            Log.v("cpsample", "caller: " +  detectCaller());
+            Log.v("siuli", "cpsample > " + event + " -> " + uri);
+            Log.v("siuli", "cpsample > caller: " +  detectCaller());
         }
     }
 
@@ -260,7 +260,7 @@ public class NoteContentProvider extends ContentProvider {
 
                 String idStr = uri.getLastPathSegment();
 
-                Log.d("cpsample", "idSt: " + idStr);
+                Log.d("siuli", "cpsample > idSt: " + idStr);
                 String where = "cast(" + NoteContract.Notes._ID + " as text) = " + idStr;
                 if(!TextUtils.isEmpty(selection)){
                     where += " AND " + selection;
@@ -274,7 +274,7 @@ public class NoteContentProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        Log.d("cpsample", "updateCount: " + updateCount);
+        Log.d("siuli", "cpsample > updateCount: " + updateCount);
         return updateCount;
     }
 }

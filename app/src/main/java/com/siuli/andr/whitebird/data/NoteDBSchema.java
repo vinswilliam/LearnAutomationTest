@@ -13,6 +13,7 @@ public interface NoteDBSchema {
     String TBL_PHOTOS = "photos";
 
     String COL_ID = BaseColumns._ID;
+    String COL_NOTE_ID = "note_id";
     String COL_TITLE = "title";
     String COL_DESCRIPTION = "description";
     String COL_NOTE_DATE = "note_date";
@@ -22,12 +23,13 @@ public interface NoteDBSchema {
     String DDL_CREATE_TBL_NOTES =
             "CREATE TABLE " + TBL_NOTES + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_TITLE + " TEXT, " +
-                COL_DESCRIPTION + " TEXT, " +
-                COL_NOTE_DATE + " LONG, " +
-                COL_NOTE_CREATED + " LONG, " +
-                COL_STATUS + " LONG" +
-                ")";
+                    COL_NOTE_ID + " TEXT, " +
+                    COL_TITLE + " TEXT, " +
+                    COL_DESCRIPTION + " TEXT, " +
+                    COL_NOTE_DATE + " LONG, " +
+                    COL_NOTE_CREATED + " LONG, " +
+                    COL_STATUS + " LONG" +
+                    ")";
 
     String COL_URI = "uri";
     String COL_NOTE = "note";

@@ -63,7 +63,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
             String userObjectId = mAccountManager.getUserData(account, AccountGeneral.USERDATA_USER_OBJ_ID);
 
             String secretKey = "NgledzEXdPvNJaRHwZSHIOfgLoWJFeFTrtLuPheZ";
-            String URL = "https://luminous-heat-594.firebaseio.com/note?auth=" + secretKey;
+            String URL = "https://luminous-heat-594.firebaseio.com/note.json?auth=" + secretKey;
 
             Ion.with(mContext)
             .load(URL)
