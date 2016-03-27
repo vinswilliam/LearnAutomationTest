@@ -32,7 +32,6 @@ public class ActivityInstrumentTestCase {
     @Test
     public void writeNoteTitle(){
         onView(withId(R.id.et_note_title)).perform(new ViewAction[]{typeText(STRING_TO_BE_TYPED)});
-
         onView(withId(R.id.et_note_title)).check(matches(withText(STRING_TO_BE_TYPED)));
     }
 

@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Created by william on 1/28/2016.
  */
-public class AccountActivity1 extends Activity {
+public class LoginActivity extends Activity {
 
     private static final String STATE_DIALOG = "state_dialog";
     private static final String STATE_INVALIDATE = "state_invalidate";

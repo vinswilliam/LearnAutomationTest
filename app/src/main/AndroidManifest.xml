@@ -27,7 +27,7 @@
         <activity android:name=".addNote.AddNoteView"/>
 
         <!-- Account Auth -->
-        <activity android:name=".login.AccountActivity1" >
+        <activity android:name=".login.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

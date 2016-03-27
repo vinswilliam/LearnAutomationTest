@@ -27,6 +27,7 @@ import com.siuli.andr.whitebird.data.NoteContract;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TimerTask;
 
 /**
  * Created by william on 2/4/2016.
@@ -47,6 +48,7 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, final ContentProviderClient provider, SyncResult syncResult) {
 
+        Log.d("vinsen", "Perform sync > implement sth here");
         StringBuilder sb = new StringBuilder();
         if(extras != null){
             for(String key : extras.keySet()){
@@ -54,60 +56,68 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
 
-        Log.d("siuli", TAG + " > " + "onPerformSync for account[" + account.name + "]. Extras " + sb.toString());
+        Log.d("vinsen", TAG + " > " + "onPerformSync for account[" + account.name + "]. Extras " + sb.toString());
 
-        // TODO create your own logic to sync data between local and remote database
 
         try {
-            String authToken = mAccountManager.blockingGetAuthToken(account, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
-            String userObjectId = mAccountManager.getUserData(account, AccountGeneral.USERDATA_USER_OBJ_ID);
-
-            Log.d("siuli", "onSync > " + authToken);
-
-            String secretKey = "NgledzEXdPvNJaRHwZSHIOfgLoWJFeFTrtLuPheZ";
-            String URL = "https://luminous-heat-594.firebaseio.com/note.json?auth=" + secretKey;
-
-            //get local item
-            ArrayList<Note> localNotes = new ArrayList<>();
-            Cursor cursor = null;
-            try {
-                cursor = provider.query(NoteContract.Notes.CONTENT_URI, NoteContract.Notes.PROJECTION_ALL, null, null, NoteContract.Notes.SORT_ORDER_DEFAULT);
-
-                if (cursor != null && cursor.moveToFirst()) {
-                    while (!cursor.isAfterLast()) {
-                        Note note = new Note(cursor);
-                        localNotes.add(note);
-                        cursor.moveToNext();
-                    }
-                    cursor.close();
-                }
-
-            } catch (RemoteException e1) {
-                e1.printStackTrace();
-            }
-
-            //get from server
-            Ion.with(mContext)
-            .load(URL)
-            .asJsonObject()
-            .setCallback(new FutureCallback<JsonObject>() {
-                @Override
-                public void onCompleted(Exception e, JsonObject result) {
-
-                    if(result != null) {
-                        Log.d("siuli", TAG + " > " + result.toString());
-
-                    }
-                }
-            });
-
-        } catch (OperationCanceledException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (AuthenticatorException e) {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        // TODO create your own logic to sync data between local and remote database
 
+
+
+//        try {
+//            String authToken = mAccountManager.blockingGetAuthToken(account, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
+//            String userObjectId = mAccountManager.getUserData(account, AccountGeneral.USERDATA_USER_OBJ_ID);
+//
+//            Log.d("siuli", "onSync > " + authToken);
+//
+//            String secretKey = "NgledzEXdPvNJaRHwZSHIOfgLoWJFeFTrtLuPheZ";
+//            String URL = "https://luminous-heat-594.firebaseio.com/note.json?auth=" + secretKey;
+//
+//            //get local item
+//            ArrayList<Note> localNotes = new ArrayList<>();
+//            Cursor cursor = null;
+//            try {
+//                cursor = provider.query(NoteContract.Notes.CONTENT_URI, NoteContract.Notes.PROJECTION_ALL, null, null, NoteContract.Notes.SORT_ORDER_DEFAULT);
+//
+//                if (cursor != null && cursor.moveToFirst()) {
+//                    while (!cursor.isAfterLast()) {
+//                        Note note = new Note(cursor);
+//                        localNotes.add(note);
+//                        cursor.moveToNext();
+//                    }
+//                    cursor.close();
+//                }
+//
+//            } catch (RemoteException e1) {
+//                e1.printStackTrace();
+//            }
+//
+//            //get from server
+//            Ion.with(mContext)
+//            .load(URL)
+//            .asJsonObject()
+//            .setCallback(new FutureCallback<JsonObject>() {
+//                @Override
+//                public void onCompleted(Exception e, JsonObject result) {
+//
+//                    if(result != null) {
+//                        Log.d("siuli", TAG + " > " + result.toString());
+//
+//                    }
+//                }
+//            });
+//
+//        } catch (OperationCanceledException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (AuthenticatorException e) {
+//            e.printStackTrace();
+//        }
+//
     }
 }

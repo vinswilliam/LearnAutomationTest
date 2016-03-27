@@ -10,6 +10,8 @@ import com.siuli.andr.whitebird.data.Note;
 public interface IListNotePresenter {
 
     void getNotes();
+    void syncNotes();
+    void refreshSyncStatus();
     void createNote();
     void moveToNoteDetail(View view, int position);
     void updateNote(long id, Note note);

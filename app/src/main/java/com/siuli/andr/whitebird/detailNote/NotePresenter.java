@@ -22,6 +22,8 @@ import com.siuli.andr.whitebird.data.Note;
 import com.siuli.andr.whitebird.data.NoteContract;
 import com.siuli.andr.whitebird.listNotes.ListNoteView;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 /**
  * Created by william on 1/13/2016.
  */

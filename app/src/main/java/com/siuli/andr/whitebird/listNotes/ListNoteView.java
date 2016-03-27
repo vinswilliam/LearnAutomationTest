@@ -1,31 +1,23 @@
 package com.siuli.andr.whitebird.listNotes;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SyncStatusObserver;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
 
 import com.siuli.andr.whitebird.R;
-import com.siuli.andr.whitebird.account.AccountGeneral;
 import com.siuli.andr.whitebird.addNote.AddNoteView;
 import com.siuli.andr.whitebird.data.Note;
-import com.siuli.andr.whitebird.data.NoteContract;
 import com.siuli.andr.whitebird.detailNote.NoteView;
 
 import java.util.List;
@@ -34,6 +26,8 @@ import java.util.List;
  * Created by william on 1/11/2016.
  */
 public class ListNoteView extends AppCompatActivity implements IListNoteView {
+
+    private Toolbar mToolbar;
 
     private IListNotePresenter mNotePresenter;
     private SwipeRefreshLayout mRefreshLayout;
@@ -44,85 +38,28 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
 
     private FloatingActionButton mFabAddNote;
 
-    private AccountManager mAccountManager;
-    private Account mConnectedAccount;
-
     SyncStatusObserver syncObserver = new SyncStatusObserver() {
         @Override
         public void onStatusChanged(int which) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    refreshSyncStatus();
+                    mNotePresenter.refreshSyncStatus();
                 }
             });
         }
     };
-
-    private void refreshSyncStatus(){
-        String status;
-
-        if(ContentResolver.isSyncActive(mConnectedAccount, NoteContract.AUTHORITY)) {
-            showIndicator();
-            status = "Status: Syncing..";
-        } else if (ContentResolver.isSyncPending(mConnectedAccount, NoteContract.AUTHORITY)) {
-
-            status = "Status: Pending..";
-        } else {
-            hideIndicator();
-            status = "Status: idle";
-        }
-
-        Log.d("siuli", "Sync > " + status);
-    }
-
-    String authToken;
-    private void getTokenForAccountCreateIfNeeded(String accountType, String authTokenType) {
-        final AccountManagerFuture<Bundle> future = mAccountManager.getAuthTokenByFeatures(accountType, authTokenType, null, this, null, null,
-                new AccountManagerCallback<Bundle>() {
-                    @Override
-                    public void run(AccountManagerFuture<Bundle> future) {
-                        Bundle bnd = null;
-                        try {
-                            bnd = future.getResult();
-                            authToken = bnd.getString(AccountManager.KEY_AUTHTOKEN);
-                            if (authToken != null) {
-                                String accountName = bnd.getString(AccountManager.KEY_ACCOUNT_NAME);
-                                mConnectedAccount = new Account(accountName, AccountGeneral.ACCOUNT_TYPE);
-                            }
-                            Log.d("siuli", ((authToken != null) ? "SUCCESS!\ntoken: " + authToken : "FAIL"));
-                            Log.d("siuli", "GetTokenForAccount Bundle is " + bnd);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                , null);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listnote);
 
-        mAccountManager = AccountManager.get(this);
-        getTokenForAccountCreateIfNeeded(AccountGeneral.ACCOUNT_TYPE, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS);
-
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-                if(mConnectedAccount == null){
-                    Toast.makeText(getApplicationContext(), "Please connect first", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                //do something
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true); // performing a sync no matter if it's off
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true); // performing a sync no matter if it's off
-                ContentResolver.requestSync(mConnectedAccount, NoteContract.AUTHORITY, bundle);
+                hideIndicator();
             }
         });
 
@@ -132,11 +69,11 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
         mRecyclerViewNote.setLayoutManager(mLayoutManager);
         mRecyclerViewNote.addOnItemTouchListener(new RecycleItemClickListener(getApplicationContext(),
                 new RecycleItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int itemPosition) {
-                mNotePresenter.moveToNoteDetail(view, itemPosition);
-            }
-        }));
+                    @Override
+                    public void onItemClick(View view, int itemPosition) {
+                        mNotePresenter.moveToNoteDetail(view, itemPosition);
+                    }
+                }));
 
         mFabAddNote = (FloatingActionButton) findViewById(R.id.fab_add_note);
         mFabAddNote.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +83,11 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
             }
         });
 
-        mNotePresenter = new ListNotePresenter(this, getApplicationContext());
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle("List Item");
+        setSupportActionBar(mToolbar);
+
+        mNotePresenter = new ListNotePresenter(this, this);
     }
 
     Object handleSyncServer;
@@ -205,5 +146,23 @@ public class ListNoteView extends AppCompatActivity implements IListNoteView {
         noteDetailIntent.putExtra("note", note);
         noteDetailIntent.putExtra("noteId", note.getId());
         startActivity(noteDetailIntent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_listnote, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_sync:
+                mNotePresenter.syncNotes();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
